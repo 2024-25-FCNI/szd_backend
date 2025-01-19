@@ -14,6 +14,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
+
+
+Route::get('/sanctum/csrf-cookie', function (Request $request) {
+    return response()->json(['csrf_token' => csrf_token()]);
+});
+
 Route::post('/regisztracio',[RegisteredUserController::class, 'store']);
 Route::post('/bejelentkezes',[AuthenticatedSessionController::class, 'store']);
 

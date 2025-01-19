@@ -13,33 +13,34 @@ class UserController extends Controller
     public function updatePassword(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            "password" => 'string|min:3|max:50'
+            'password' => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised(),
+            ],
         ]);
+
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors()->all()], 400);
         }
-        $user = User::where("id", $id)->update([
-            "password" => Hash::make($request->password),
-        ]);
-        return response()->json(["user" => $user]);
-    
-    $validator = Validator::make($request->all(), [
-        "password" => array( 'required', 'regex:/^[a-zA-Z]+\d*$/u')
-              ]);
-        
-    $validator = Validator::make($request->all(), [
-        'password' => [ 'required', 'string', 
-        Password::min(8) 
-        ->mixedCase() 
-        ->numbers() 
-        ->symbols() 
-        ->uncompromised(), 
-        'confirmed' ],
-              ]);
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
         }
 
+        $user->password = Hash::make($request->password);
+        $user->save();
 
-        /**
+        return response()->json(["message" => "Password updated successfully", "user" => $user]);
+    }
+
+    /**
      * GET: Az összes felhasználó lekérése.
      */
     public function index()
@@ -65,23 +66,20 @@ class UserController extends Controller
     /**
      * POST: Új felhasználó létrehozása.
      */
-
-    
-
     public function store(Request $request)
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|min:6|confirmed',
             'role' => 'integer|in:0,1',
         ]);
 
         $user = new User();
         $user->name = $validatedData['name'];
         $user->email = $validatedData['email'];
-        $user->password = bcrypt($validatedData['password']); // Jelszó titkosítása
-        $user->role = $validatedData['role'] ?? 1; // Alapértelmezett szerep: 1 (felhasználó)
+        $user->password = Hash::make($validatedData['password']); // Jelszó titkosítása
+        $user->role = $validatedData['role'] ?? 1; // Alapértelmezett szerep: felhasználó
         $user->save();
 
         return response()->json(['message' => 'Felhasználó sikeresen létrehozva', 'user' => $user], 201);
@@ -114,7 +112,7 @@ class UserController extends Controller
         }
 
         if (isset($validatedData['password'])) {
-            $user->password = bcrypt($validatedData['password']); // Jelszó titkosítása
+            $user->password = Hash::make($validatedData['password']);
         }
 
         if (isset($validatedData['role'])) {
@@ -139,7 +137,7 @@ class UserController extends Controller
 
         $user->delete();
 
-        return response()->json(['message' => 'User deleted successfully']);
+        return response()->json(['message' => 'User deleted successfully', 'user' => $user]);
     }
 
     /**
@@ -150,9 +148,4 @@ class UserController extends Controller
         $admins = User::where('role', 0)->get();
         return response()->json($admins);
     }
-
-
-
-    
-    
 }
