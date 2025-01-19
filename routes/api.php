@@ -23,8 +23,12 @@ Route::get('/sanctum/csrf-cookie', function (Request $request) {
     return response()->json(['csrf_token' => csrf_token()]);
 });
 
-Route::post('/regisztracio',[RegisteredUserController::class, 'store']);
-Route::post('/bejelentkezes',[AuthenticatedSessionController::class, 'store']);
+
+Route::middleware(['web'])->group(function () {
+    Route::post('/regisztracio', [RegisteredUserController::class, 'store']);
+    Route::post('/bejelentkezes', [AuthenticatedSessionController::class, 'store']);
+});
+
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {

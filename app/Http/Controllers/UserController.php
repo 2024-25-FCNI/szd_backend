@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
@@ -148,4 +149,11 @@ class UserController extends Controller
         $admins = User::where('role', 0)->get();
         return response()->json($admins);
     }
+    
+    public function aktUser()
+    {
+        $user = Auth::user();
+        return $user;
+    }
+
 }
