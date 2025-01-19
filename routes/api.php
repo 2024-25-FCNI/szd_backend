@@ -10,6 +10,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VasarlasFejController;
 use App\Http\Controllers\VasarlasTetelController;
 use App\Http\Middleware\Admin;
+use App\Models\Termek;
+use App\Models\User;
+use App\Models\VasarlasFej;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,7 +36,88 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::middleware(['auth:sanctum', Admin::class])->group(function () {
     Route::get('/admin/users', [UserController::class, 'index']);
+
+
+    
 });
+
+
+
+
+
+
+
+
+
+
+// Felhasználók vásárlásaik összegével
+Route::get('/admin/felhasznalok-vasarlasai', function () {
+    return User::felhasznalokVasarlasOsszeggel();
+});
+
+// Vásárlások és azokhoz tartozó termékek
+Route::get('/vasarlasok-termekekkel', function () {
+    return VasarlasFej::vasarlasokEsTermekek();
+});
+
+// Termékek adott címkével
+Route::get('/termekek-cimke-szerint/{cimke}', function ($cimke) {
+    return Termek::adottCimkesTermekek($cimke);
+});
+
+// Egy adott felhasználó vásárlásainak listája
+Route::get('/felhasznalo/{felhasznaloId}/vasarlasai', function ($felhasznaloId) {
+    return VasarlasFej::felhasznaloVasarlasai($felhasznaloId);
+});
+
+//Adott csomagban lévő termékek
+Route::get('/csomagok/{csomagId}/termekek', function ($csomagId) {
+    return VasarlasFej::csomagTermekei($csomagId);
+});
+
+// Termékek hozzáférési idővel rendezve
+Route::get('/termekek-hozzaferesi-ido-szerint', function () {
+    return Termek::termekekHozzaferesiIdovel();
+});
+
+//Felhasználók szerep alapján
+Route::get('/felhasznalok-szerep-szerint/{szerep}', function ($szerep) {
+    return User::felhasznalokSzerepSzerint($szerep);
+});
+
+//Összes vásárlás adott dátumintervallumban
+Route::get('/vasarlasok-datum-intervallumban', function (Illuminate\Http\Request $request) {
+    $kezdoDatum = $request->query('kezdo');
+    $vegeDatum = $request->query('vege');
+    return VasarlasFej::vasarlasokDatumIntervallumban($kezdoDatum, $vegeDatum);
+});
+
+//Legdrágább termékek listája
+Route::get('/termekek-legdragabbak', function () {
+    return Termek::legdragabbTermekek();
+});
+
+//Termékek és azokhoz tartozó címkék
+Route::get('/termekek-cimkekkel', function () {
+    return Termek::termekekEsCimkek();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -48,12 +48,31 @@ class User extends Authenticatable
         ];
     }
 
-    public function isAdmin(){
-        return $this->role ===0;
+    public function isAdmin()
+    {
+        return $this->role === 0;
     }
 
-    public function isRegularUser(){
+    public function isRegularUser()
+    {
         return $this->role === 1;
     }
 
+    public static function felhasznalokVasarlasOsszeggel()
+    {
+        return self::withSum('vasarlasFej', 'osszeg')->get();
+    }
+
+    public static function felhasznalokSzerepSzerint($szerep)
+    {
+        return self::where('szerep', '=', $szerep)->get();
+    }
+
+    // Ez a metódus manuálisan meghívható a felhasználó összköltésének frissítésére.
+    // Használata például akkor lehet szükséges, ha a vásárlásokhoz kapcsolódó adatokat módosítjuk.
+    public function frissitOsszesKoltest()
+    {
+        $this->osszes_koltese = $this->vasarlasFej->sum('osszeg');
+        $this->save();
+    }
 }
