@@ -32,8 +32,9 @@ Route::middleware(['auth:sanctum', Admin::class])->group(function () {
     Route::get('/admin/users', [UserController::class, 'index']);
 
 
-    
+
 });
+
 
 
 
@@ -95,18 +96,6 @@ Route::get('/termekek-legdragabbak', function () {
 Route::get('/termekek-cimkekkel', function () {
     return Termek::termekekEsCimkek();
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

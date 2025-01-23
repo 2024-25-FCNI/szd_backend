@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Cimke;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +17,43 @@ return new class extends Migration
             $table->string('elnevezes');
             $table->timestamps();
         });
+
+
+        Cimke::insert([
+            [
+                'elnevezes' => 'Új',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'elnevezes' => 'Akciós',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'elnevezes' => 'Kedvezményes',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'elnevezes' => 'Top termék',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'elnevezes' => 'Limitált kiadás',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'elnevezes' => 'Ajánlott',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+
+
     }
 
     /**
