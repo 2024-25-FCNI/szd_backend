@@ -22,24 +22,39 @@ class RegisteredUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'nev' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'jelszo' => ['required', 'confirmed', Rules\password::defaults()],
+            'role' => ['integer']
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'nev' => $request->nev,
             'email' => $request->email,
-            'password' => Hash::make($request->string('password')),
+            'jelszo' => Hash::make($request->string('jelszo')),
+            'role' => 1
         ]);
 
         event(new Registered($user));
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
-                    'access_token' => $token,
-                    'token_type' => 'Bearer',
-                    'user' => $user
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user
         ]);
-        
+
+        $validatedData = $request->validate([
+            'nev' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'jelszo' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = User::create([
+            'nev' => $validatedData['nev'],
+            'email' => $validatedData['email'],
+            'jelszo' => Hash::make($validatedData['jelszo']),
+        ]);
+
+        return response()->json(['message' => 'User successfully registered', 'user' => $user], 201);
     }
 }
